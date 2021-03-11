@@ -25,7 +25,7 @@
       var socket = io();
 
       var webuser = window.location.search;
-      var username = webuser.slice(10)
+      const username = webuser.slice(10)
 
     
       var messages = document.getElementById('messages');
@@ -35,14 +35,14 @@
       form.addEventListener('submit', function(e) {
         e.preventDefault();
         if (input.value) {
-          socket.emit('chat message', input.value);
+          socket.emit('chat message', {msg: input.value, user: username});
           input.value = '';
         }
       });
     
-      socket.on('chat message', function(msg) {
+      socket.on('chat message', function(mess) {
         var item = document.createElement('li');
-        item.textContent = msg;
+        item.textContent = `${mess.user}: ${mess.msg}`;
         messages.appendChild(item);
         window.scrollTo(0, document.body.scrollHeight);
       });
