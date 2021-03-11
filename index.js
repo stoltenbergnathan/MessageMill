@@ -2,6 +2,7 @@
 
 const express = require('express')
 const app = express()
+const path = require('path')
 const port = process.env.PORT || 5000
 
 require("dotenv").config()
@@ -18,6 +19,10 @@ mongoose.connection.once("open", () => {
 })
 
 app.get('/', (req, res) => {
+    res.sendFile(__dirname + '/login.html');
+  });
+
+app.get('/index.html?', (req, res) => {
     res.sendFile(__dirname + '/index.html');
   });
 
