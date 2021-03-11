@@ -41,7 +41,7 @@ io.on('connection', (socket) => {
         io.emit('chat message', msg);
 
         const newMessage = new Message({
-            message: msg.msg
+            message: `${msg.user}: ${msg.msg}`
         })
     newMessage.save();
       });
