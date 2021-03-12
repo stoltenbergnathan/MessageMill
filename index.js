@@ -51,6 +51,13 @@ io.use((socket, next) => {
 io.on('connection', (socket) => {
     console.log('a user connected ' + socket.id + ' ' + socket.user);
     
+    Message.find((err, data) => {
+      if(err)
+        console.log(err)
+      else
+        socket.emit('load', data)
+    });
+
     socket.broadcast.emit("user connected", {
       userID: socket.id,
       username: socket.user,
