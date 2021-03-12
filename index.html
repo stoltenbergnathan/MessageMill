@@ -14,38 +14,73 @@
       #messages > li { padding: 0.5rem 1rem; }
       #messages > li:nth-child(odd) { background: #efefef; }
     </style>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
   </head>
   <body>
-    <ul id="messages"></ul>
-    <form id="form" action="">
-      <input id="input" autocomplete="off" /><button>Send</button>
-    </form>
-    <script src="/socket.io/socket.io.js"></script>
-    <script>
-      var socket = io();
+    <nav class="navbar navbar-inverse">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="#">MessageMill</a>
+        </div>
+        <ul class="nav navbar-nav">
+          <li><a href="#">Main Room</a></li>
+          <li><a href="./directchat.html">Direct Messages</a></li>
+          <li><a href="./groupchat.html">Chat Rooms</a></li>
+        </ul>
+      </div>
+    </nav>
+    <div>
+      <ul id="messages"></ul>
+      <form id="form" action="">
+        <input id="input" autocomplete="off" /><button>Send</button>
+      </form>
+      <script src="/socket.io/socket.io.js"></script>
+      <script>
+        const username = document.cookie;
 
-      var webuser = window.location.search;
-      const username = webuser.slice(10)
+        var socket = io({
+          auth: {
+            user: username
+          }
+        });
 
-    
-      var messages = document.getElementById('messages');
-      var form = document.getElementById('form');
-      var input = document.getElementById('input');
-    
-      form.addEventListener('submit', function(e) {
-        e.preventDefault();
-        if (input.value) {
-          socket.emit('chat message', {msg: input.value, user: username});
-          input.value = '';
-        }
-      });
-    
-      socket.on('chat message', function(mess) {
-        var item = document.createElement('li');
-        item.textContent = `${mess.user}: ${mess.msg}`;
-        messages.appendChild(item);
-        window.scrollTo(0, document.body.scrollHeight);
-      });
-    </script>
+      
+        var messages = document.getElementById('messages');
+        var form = document.getElementById('form');
+        var input = document.getElementById('input');
+        var ulist = document.getElementById('users');
+
+      
+        form.addEventListener('submit', function(e) {
+          e.preventDefault();
+          if (input.value) {
+            socket.emit('chat message', {msg: input.value, user: username});
+            input.value = '';
+          }
+        });
+      
+        socket.on('chat message', function(mess) {
+          var item = document.createElement('li');
+          item.textContent = `${mess.user}: ${mess.msg}`;
+          messages.appendChild(item);
+          window.scrollTo(0, document.body.scrollHeight);
+        });
+
+        socket.on("user connected", (user) => {
+          var item = document.createElement('li');
+          item.textContent = `${user.username} has connected`;
+          messages.appendChild(item);
+          window.scrollTo(0, document.body.scrollHeight);
+        })
+
+        socket.on("disconnected", (user) => {
+          var item = document.createElement('li');
+          item.textContent = `${user} has disconnected`;
+          messages.appendChild(item);
+          window.scrollTo(0, document.body.scrollHeight);
+        })
+
+      </script>
+    </div>
   </body>
 </html>

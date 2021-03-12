@@ -2,12 +2,25 @@
 <html lang="en">
 <head>
     <title>Login</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
 </head>
 <body>
-    <form method="GET" action="./index.html">
+    <form id="Login" style="text-align: center;" class="form-horizontal" action="./index.html">
         <p>Username</p>
-        <input type="text" name="username" required pattern="\S+" title="No Spaces Allowed" required />
-        <button type="submit">Submit</button>
+        <input id="input" type="text" required pattern="\S+" title="No Spaces Allowed" required />
+        <button class="btn btn-primary" type="submit">Submit</button>
     </form>
+
+    <script>
+        var Login = document.getElementById('Login');
+        var input = document.getElementById('input');
+
+        Login.addEventListener('submit', function(e) {
+          e.preventDefault();
+          console.log(input.value)
+          document.cookie = input.value
+          Login.submit();
+        });
+    </script>
 </body>
 </html>

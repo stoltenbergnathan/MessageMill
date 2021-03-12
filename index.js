@@ -20,11 +20,19 @@ mongoose.connection.once("open", () => {
 
 app.get('/', (req, res) => {
     res.sendFile(__dirname + '/login.html');
-  });
+});
 
-app.get('/index.html?', (req, res) => {
+app.get('/index.html', (req, res) => {
     res.sendFile(__dirname + '/index.html');
-  });
+});
+
+app.get('/directchat.html', (req, res) => {
+  res.sendFile(__dirname + '/directchat.html');
+});
+
+app.get('/groupchat.html', (req, res) => {
+  res.sendFile(__dirname + '/groupchat.html');
+});
 
 const server = app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`)
@@ -34,8 +42,19 @@ const io = require('socket.io')(server)
 require("./models/Message")
 const Message = mongoose.model("Message")
 
+io.use((socket, next) => {
+  const user = socket.handshake.auth.user;
+  socket.user = user;
+  next();
+})
+
 io.on('connection', (socket) => {
-    console.log('a user connected');
+    console.log('a user connected ' + socket.id + ' ' + socket.user);
+    
+    socket.broadcast.emit("user connected", {
+      userID: socket.id,
+      username: socket.user,
+    })
 
     socket.on('chat message', (msg) => {
         io.emit('chat message', msg);
@@ -47,6 +66,7 @@ io.on('connection', (socket) => {
       });
 
     socket.on('disconnect', () => {
+        io.emit('disconnected', socket.user)
         console.log('user disconnected');
       });
   });
