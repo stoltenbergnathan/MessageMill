@@ -18,6 +18,11 @@ mongoose.connection.once("open", () => {
     console.log("MONGODB CONNECTED")
 })
 
+require("./models/Message")
+require("./models/Users")
+const Message = mongoose.model("Message")
+const U = mongoose.model("User")
+
 app.get('/', (req, res) => {
     res.sendFile(__dirname + '/login.html');
 });
@@ -39,8 +44,6 @@ const server = app.listen(port, () => {
 })
 
 const io = require('socket.io')(server)
-require("./models/Message")
-const Message = mongoose.model("Message")
 
 io.use((socket, next) => {
   const user = socket.handshake.auth.user;
@@ -50,6 +53,11 @@ io.use((socket, next) => {
 
 io.on('connection', (socket) => {
     console.log('a user connected ' + socket.id + ' ' + socket.user);
+
+    const newUser = new U({
+      username: socket.user
+    })
+    newUser.save();
     
     Message.find((err, data) => {
       if(err)
@@ -72,8 +80,23 @@ io.on('connection', (socket) => {
     newMessage.save();
       });
 
+      socket.on('direct page', () => {
+        U.find((err, data) => {
+          if(err)
+            console.log(err)
+          else
+            socket.emit('userlist', data)
+        });
+      })
+
     socket.on('disconnect', () => {
         io.emit('disconnected', socket.user)
-        console.log('user disconnected');
+        U.deleteMany({username: socket.user}, (err, data) => {
+          if(err)
+            console.log(err)
+          else
+            console.log(data)
+        })
+        console.log(`${socket.user} disconnected`);
       });
   });

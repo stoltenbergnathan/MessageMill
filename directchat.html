@@ -1,7 +1,28 @@
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css%22%3E">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js%22%3E"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js%22%3E"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js%22%3E"></script>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+<!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css%22%3E">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js%22%3E"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js%22%3E"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js%22%3E"></script> -->
+    <style>
+        body { margin: 0; padding-bottom: 3rem; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+  
+        #form { background: rgba(0, 0, 0, 0.15); padding: 0.25rem; position: absolute; bottom: 0; left: 0; right: 0; display: flex; height: 3rem; box-sizing: border-box; backdrop-filter: blur(10px); }
+        #input { border: none; padding: 0 1rem; flex-grow: 1; border-radius: 2rem; margin: 0.25rem; }
+        #input:focus { outline: none; }
+        #form > button { background: #333; border: none; padding: 0 1rem; margin: 0.25rem; border-radius: 3px; outline: none; color: #fff; }
+  
+        #messages { list-style-type: none; margin: 0; padding: 0; }
+        #messages > li { padding: 0.5rem 1rem; }
+        #messages > li:nth-child(odd) { background: #efefef; }
+    </style>
     <title>Users</title>
 </head>
 <body>
@@ -11,21 +32,57 @@
             <a class="navbar-brand" href="./index.html">MessageMill</a>
             </div>
             <ul class="nav navbar-nav">
-            <li><a href="./index.html">Main Room</a></li>
             <li><a href="./directchat.html">Direct Messages</a></li>
             <li><a href="./groupchat.html">Chat Rooms</a></li>
             </ul>
         </div>
     </nav>
-    <div id="tha">
-
+    <div class="row container-fluid">
+        <div class="col-sm-4">
+            <select class="form-select" id="userlist"></select>
+        </div>
+        
+        <div class="col-sm-8 border-box">
+            <ul id="messages" style="overflow: auto; height: 84%">
+            </ul>
+            <form id="form" action="" style="position:static;">
+                <input id="input" autocomplete="off" /><button>Send</button>
+            </form>
+        </div>
     </div>
+    <script src="/socket.io/socket.io.js"></script>
     <script>
         const username = document.cookie;
-        var tha = document.getElementById("tha");
-        var item = document.createElement('p');
-        item.textContent = username;
-        tha.appendChild(item);
+
+        var socket = io({
+            auth: {
+                user: username
+            }
+        });
+
+        var userlist = document.getElementById("userlist");
+        var messages = document.getElementById("messages");
+        var form = document.getElementById("form");
+        var input = document.getElementById("input");
+
+        form.addEventListener('submit', function(e) {
+          e.preventDefault();
+          var item = document.createElement('li');
+          item.textContent = `${username}: ${input.value}`;
+          messages.appendChild(item);
+          input.value = '';
+          messages.scrollTo(0, messages.scrollHeight)
+        });
+
+        socket.emit("direct page")
+        socket.on("userlist", (list) => {
+            list.map((lis) => {
+                console.log(lis.username)
+                console.log(username)
+                if(lis.username != username)
+                    userlist.append(new Option(`${lis.username}`, `${lis.username}`, true, true))
+            })
+        })
     </script>
 </body>
 </html>
