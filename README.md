@@ -116,4 +116,4 @@ HTML & Bootstrap
 
 ## Starting
 
-tpye npm start into terminal
+type npm start into terminal
