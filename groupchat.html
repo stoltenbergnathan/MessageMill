@@ -35,12 +35,9 @@
     </nav>
         <div class="row container-fluid">
             <div class="col-sm-4">
-                <div id="groups" class="form-check" style="overflow: auto; max-height: 490px;">
-                  <input type="radio" name="m">TEST1</input>
-                  <br>
-                  <input type="radio" name="m">TEST2</input>
-                  <br>
-                </div> 
+                <form id="groups" class="form-check" style="overflow: auto; max-height: 490px;">
+
+                </form> 
                   <form id="groupform" style="position: static; margin-top: auto;">
                     <input id="newgroup" type="text">
                     <button>Create New Group</button>
@@ -58,6 +55,7 @@
         <script src="/socket.io/socket.io.js"></script>
         <script>
             const username = document.cookie;
+            var currentGroup = ""
     
             var socket = io({
                 auth: {
@@ -71,27 +69,53 @@
             var input = document.getElementById("input");
             var newgroup = document.getElementById("newgroup")
             var groupform = document.getElementById("groupform")
-    
+
+            function groupChange(cg)
+            {
+              while(messages.firstChild)
+                messages.removeChild(messages.firstChild)
+              currentGroup = cg;
+              console.log(currentGroup)
+              socket.emit("group change", cg)
+            }
+
             form.addEventListener('submit', function(e) {
               e.preventDefault();
-              var item = document.createElement('li');
-              item.textContent = `${socket.auth.user}: ${input.value}`;
-              messages.appendChild(item);
+              socket.emit("group message", {msg: input.value, user: username})
               input.value = '';
-              messages.scrollTo(0, messages.scrollHeight);
             });
 
             groupform.addEventListener('submit', (e) => {
               e.preventDefault()
               if(newgroup.value != ""){
-                var item = '<input type="radio" name="m">' + newgroup.value + '</input>'
+                var item = `<input id=${newgroup.value} type="radio" name="group" onClick="groupChange(this.id)">` + newgroup.value + '</input>'
                 grouplist.innerHTML += item
                 grouplist.innerHTML += "<br>"
+                socket.emit("group add", newgroup.value)
                 newgroup.value = ""
               }
             })
 
+            socket.on("group message", (mess) => {
+              var item = document.createElement('li');
+              item.textContent = `${mess.user}: ${mess.msg}`;
+              messages.appendChild(item);
+              window.scrollTo(0, document.body.scrollHeight);
+            })
 
+            socket.on("server group", (value) => {
+              var item = `<input id=${value} type="radio" name="group" onClick="groupChange(this.id)">` + `${value}` + '</input>'
+              grouplist.innerHTML += item
+              grouplist.innerHTML += "<br>"
+            })
+
+            socket.on('group load', (data) => {
+              data.map((d) => {
+                var item = `<input id=${d.groupname} type="radio" name="group" onClick="groupChange(this.id)">` + `${d.groupname}` + '</input>'
+                grouplist.innerHTML += item
+                grouplist.innerHTML += "<br>"
+              })
+            })
         </script>
 </body>
 </html>

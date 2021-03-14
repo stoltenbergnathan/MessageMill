@@ -13,6 +13,7 @@ require("dotenv").config()
 
 const mongoose = require("mongoose")
 const Users = require('./models/Users')
+const { connect } = require('http2')
 mongoose.connect(process.env.DATABASE, {useUnifiedTopology: true, useNewUrlParser: true})
 
 mongoose.connection.on("error", (err) => {
@@ -109,6 +110,13 @@ io.on('connection', (socket) => {
         socket.emit('load', data)
     });
 
+    Group.find((err, data) => {
+      if(err)
+        console.log(err)
+      else
+        socket.emit('group load', data)
+    })
+
     socket.broadcast.emit("user connected", {
       userID: socket.id,
       username: socket.user,
@@ -123,6 +131,23 @@ io.on('connection', (socket) => {
         })
     newMessage.save();
       });
+
+      socket.on("group add", (value) => {
+        console.log(value)
+        const newGroup = new Group({
+          groupname: `${value}`
+        })
+        newGroup.save();
+        socket.broadcast.emit("server group", value);
+      });
+
+      socket.on("group change", (value) => {
+        socket.join(`${value}`)
+      })
+
+      socket.on('group message', (msg) => {
+        io.emit('group message', msg);
+      })
 
     socket.on('disconnect', () => {
         io.emit('disconnected', socket.user)     
