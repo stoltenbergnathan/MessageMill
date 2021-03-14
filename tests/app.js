@@ -23,9 +23,5 @@ app.get('/groupchat', (req, res) => {
   res.sendFile(__dirname + '/groupchat.html');
 });
 
-app.get('/logout', (req, res) => {
-  req.logout();
-  res.sendFile(__dirname + '/login.html');
-})
 
 module.exports = app
