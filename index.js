@@ -3,11 +3,16 @@
 const express = require('express')
 const app = express()
 const path = require('path')
-const port = process.env.PORT || 5000
+const passport = require('passport')
+const LocalStrategy = require('passport-local')
+const session = require('express-session')
+const parser = require('body-parser')
+const port = process.env.PORT || 6978
 
 require("dotenv").config()
 
 const mongoose = require("mongoose")
+const Users = require('./models/Users')
 mongoose.connect(process.env.DATABASE, {useUnifiedTopology: true, useNewUrlParser: true})
 
 mongoose.connection.on("error", (err) => {
@@ -23,21 +28,62 @@ require("./models/Users")
 const Message = mongoose.model("Message")
 const U = mongoose.model("User")
 
+
+passport.serializeUser(U.serializeUser());
+passport.deserializeUser(U.deserializeUser());
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(session({
+  secret:"Welcome",
+  resave: false,
+  saveUninitialized: false,
+}))
+
+passport.use(new LocalStrategy(U.authenticate()))
+
+app.use(parser.urlencoded(
+  {extended:true}
+))
+
 app.get('/', (req, res) => {
     res.sendFile(__dirname + '/login.html');
 });
 
-app.get('/index.html', (req, res) => {
-    res.sendFile(__dirname + '/index.html');
+app.post('/login', passport.authenticate('local', {successRedirect: '/index', failureRedirect: '/'}),
+  (req, res) => {
+    
 });
 
-app.get('/directchat.html', (req, res) => {
+app.post('/register', (req, res) => {
+  console.log("Username: " + req.body.username)
+  console.log("Password: " + req.body.password)
+  U.register(new U({username: req.body.username,}), req.body.password, (err, user) => {
+    if(err){
+      console.log(err)
+      res.sendFile(__dirname + '/login.html')
+    }
+    passport.authenticate("local")(req, res, () => {
+      res.sendFile(__dirname + '/index.html')
+    })
+  })
+})
+
+app.get('/index',(req, res) => {
+  res.sendFile(__dirname + '/index.html');
+});
+
+app.get('/directchat', (req, res) => {
   res.sendFile(__dirname + '/directchat.html');
 });
 
-app.get('/groupchat.html', (req, res) => {
+app.get('/groupchat', (req, res) => {
   res.sendFile(__dirname + '/groupchat.html');
 });
+
+app.get('/logout', (req, res) => {
+  req.logout();
+  res.sendFile(__dirname + '/login.html');
+})
 
 const server = app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`)
@@ -54,11 +100,6 @@ io.use((socket, next) => {
 io.on('connection', (socket) => {
     console.log('a user connected ' + socket.id + ' ' + socket.user);
 
-    const newUser = new U({
-      username: socket.user
-    })
-    newUser.save();
-    
     Message.find((err, data) => {
       if(err)
         console.log(err)
@@ -71,6 +112,7 @@ io.on('connection', (socket) => {
       username: socket.user,
     })
 
+
     socket.on('chat message', (msg) => {
         io.emit('chat message', msg);
 
@@ -80,23 +122,8 @@ io.on('connection', (socket) => {
     newMessage.save();
       });
 
-      socket.on('direct page', () => {
-        U.find((err, data) => {
-          if(err)
-            console.log(err)
-          else
-            socket.emit('userlist', data)
-        });
-      })
-
     socket.on('disconnect', () => {
-        io.emit('disconnected', socket.user)
-        U.deleteMany({username: socket.user}, (err, data) => {
-          if(err)
-            console.log(err)
-          else
-            console.log(data)
-        })
+        io.emit('disconnected', socket.user)     
         console.log(`${socket.user} disconnected`);
       });
   });

@@ -29,11 +29,12 @@
     <nav class="navbar navbar-inverse">
         <div class="container-fluid">
             <div class="navbar-header">
-            <a class="navbar-brand" href="./index.html">MessageMill</a>
+            <a class="navbar-brand" href="./index">MessageMill</a>
             </div>
             <ul class="nav navbar-nav">
-            <li><a href="./directchat.html">Direct Messages</a></li>
-            <li><a href="./groupchat.html">Chat Rooms</a></li>
+            <li><a href="./directchat">Direct Messages</a></li>
+            <li><a href="./groupchat">Chat Rooms</a></li>
+            <li><a href="./logout">Logout</a></li>
             </ul>
         </div>
     </nav>
@@ -68,21 +69,11 @@
         form.addEventListener('submit', function(e) {
           e.preventDefault();
           var item = document.createElement('li');
-          item.textContent = `${username}: ${input.value}`;
+          item.textContent = `${socket.auth.user}: ${input.value}`;
           messages.appendChild(item);
           input.value = '';
-          messages.scrollTo(0, messages.scrollHeight)
+          messages.scrollTo(0, messages.scrollHeight);
         });
-
-        socket.emit("direct page")
-        socket.on("userlist", (list) => {
-            list.map((lis) => {
-                console.log(lis.username)
-                console.log(username)
-                if(lis.username != username)
-                    userlist.append(new Option(`${lis.username}`, `${lis.username}`, true, true))
-            })
-        })
     </script>
 </body>
 </html>
