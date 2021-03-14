@@ -114,3 +114,6 @@ HTML & Bootstrap
 
 ```
 
+#Starting
+
+tpye npm start into terminal
