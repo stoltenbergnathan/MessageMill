@@ -7,7 +7,7 @@ const passport = require('passport')
 const LocalStrategy = require('passport-local')
 const session = require('express-session')
 const parser = require('body-parser')
-const port = process.env.PORT || 6978
+const port = process.env.PORT || 8347
 
 require("dotenv").config()
 
