@@ -144,6 +144,12 @@ io.on('connection', (socket) => {
       socket.on("group change", (value) => {
         console.log(value)
         socket.join(`${value}`)
+        Group.findOne({groupname: `${value}`}, (err, data) => {
+          if(err)
+            console.log(err)
+          else
+            socket.emit("groupm load", data)
+        })
       })
 
       socket.on('group message', (msg) => {

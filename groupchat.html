@@ -101,7 +101,7 @@
                 var item = document.createElement('li');
                 item.textContent = `${mess.user}: ${mess.msg}`;
                 messages.appendChild(item);
-                window.scrollTo(0, document.body.scrollHeight);
+                messages.scrollTo(0, messages.scrollHeight);
               }
             })
 
@@ -116,6 +116,15 @@
                 var item = `<input id=${d.groupname} type="radio" name="group" onClick="groupChange(this.id)">` + `${d.groupname}` + '</input>'
                 grouplist.innerHTML += item
                 grouplist.innerHTML += "<br>"
+              })
+            })
+
+            socket.on("groupm load", (data)=> {
+              data.messages.map((d) => {
+                var item = document.createElement('li');
+                item.textContent = d;
+                messages.appendChild(item);
+                messages.scrollTo(0, messages.scrollHeight);
               })
             })
         </script>
