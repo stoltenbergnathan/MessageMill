@@ -147,10 +147,18 @@ io.on('connection', (socket) => {
       })
 
       socket.on('group message', (msg) => {
+        Group.updateOne({groupname: msg.group},
+        {$addToSet: {messages: [`${msg.user}: ${msg.msg}`] } }, (err, result) => {
+          if(err)
+            console.log(err)
+          else
+            console.log(result)
+        }
+      )
         io.sockets.in(`${msg.group}`).emit('group message', msg);
       })
 
-    socket.on('disconnect', () => {
+      socket.on('disconnect', () => {
         io.emit('disconnected', socket.user)     
         console.log(`${socket.user} disconnected`);
       });
