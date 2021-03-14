@@ -25,8 +25,10 @@ mongoose.connection.once("open", () => {
 
 require("./models/Message")
 require("./models/Users")
+require("./models/Group")
 const Message = mongoose.model("Message")
 const U = mongoose.model("User")
+const Group = mongoose.model("Group")
 
 
 passport.serializeUser(U.serializeUser());
