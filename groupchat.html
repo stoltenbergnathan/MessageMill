@@ -81,7 +81,7 @@
 
             form.addEventListener('submit', function(e) {
               e.preventDefault();
-              socket.emit("group message", {msg: input.value, user: username})
+              socket.emit("group message", {msg: input.value, user: username, group: cg})
               input.value = '';
             });
 

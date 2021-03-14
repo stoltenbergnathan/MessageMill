@@ -146,7 +146,7 @@ io.on('connection', (socket) => {
       })
 
       socket.on('group message', (msg) => {
-        io.emit('group message', msg);
+        io.to(`${msg.group}`).emit('group message', msg);
       })
 
     socket.on('disconnect', () => {
