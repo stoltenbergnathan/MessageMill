@@ -88,7 +88,7 @@
             groupform.addEventListener('submit', (e) => {
               e.preventDefault()
               if(newgroup.value != "" ){
-                var item = `<input id=${newgroup.value} type="radio" name="group" onClick="groupChange(this.id)">` + newgroup.value + '</input>'
+                var item = `<input id=${newgroup.value} type="radio" name="group" onClick="groupChange(this.id)">` + newgroup.value + '</input> <button>Delete</button>'
                 grouplist.innerHTML += item
                 grouplist.innerHTML += "<br>"
                 document.getElementById(`${newgroup.value}`).checked = true;
@@ -107,20 +107,15 @@
             })
 
             socket.on("server group", (value) => {
-              if(currentGroup != "")
-                var curr = document.getElementById(`${currentGroup}`)
-              curr.checked = true;
-              var item = `<input id=${value} type="radio" name="group" onClick="groupChange(this.id)">` + `${value}` + '</input>'
+              var item = `<input id=${value} type="radio" name="group" onClick="groupChange(this.id)">` + `${value}` + '</input> <button>Delete</button>'
               grouplist.innerHTML += item
               grouplist.innerHTML += "<br>"
-              if(currentGroup != "")
-                curr.checked = true;
               console.log(curr)
             })
 
             socket.on('group load', (data) => {
               data.map((d) => {
-                var item = `<input id=${d.groupname} type="radio" name="group" onClick="groupChange(this.id)">` + `${d.groupname}` + '</input>'
+                var item = `<input id=${d.groupname} type="radio" name="group" onClick="groupChange(this.id)">` + `${d.groupname}` + '</input> <button>Delete</button>'
                 grouplist.innerHTML += item
                 grouplist.innerHTML += "<br>"
               })
