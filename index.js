@@ -117,6 +117,13 @@ io.on('connection', (socket) => {
         socket.emit('group load', data)
     })
 
+    U.find((err, data) => {
+      if(err)
+        console.log(err)
+      else
+        socket.emit("user load", data)
+    })
+
     socket.broadcast.emit("user connected", {
       userID: socket.id,
       username: socket.user,

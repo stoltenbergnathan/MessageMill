@@ -40,6 +40,7 @@
     </nav>
     <div class="row container-fluid">
         <div class="col-sm-4">
+            <p>Talking with:</p>
             <select class="form-select" id="userlist"></select>
         </div>
         
@@ -74,6 +75,14 @@
           input.value = '';
           messages.scrollTo(0, messages.scrollHeight);
         });
+
+        socket.on("user load", (data) => {
+            data.map((d) => {
+                var item = document.createElement("option");
+                item.text = `${d.username}`
+                userlist.add(item)
+              })
+        })
     </script>
 </body>
 </html>

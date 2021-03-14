@@ -39,7 +39,7 @@
 
                 </div> 
                   <form id="groupform" style="position: static; margin-top: auto;">
-                    <input id="newgroup" type="text">
+                    <input id="newgroup" required pattern="\S+" placeholder="Group Chat Name" type="text" title="Can't have spaces">
                     <button>Create New Group</button>
                   </form>
             </div>
@@ -87,10 +87,11 @@
 
             groupform.addEventListener('submit', (e) => {
               e.preventDefault()
-              if(newgroup.value != ""){
+              if(newgroup.value != "" ){
                 var item = `<input id=${newgroup.value} type="radio" name="group" onClick="groupChange(this.id)">` + newgroup.value + '</input>'
                 grouplist.innerHTML += item
                 grouplist.innerHTML += "<br>"
+                document.getElementById(`${newgroup.value}`).checked = true;
                 socket.emit("group add", newgroup.value)
                 newgroup.value = ""
               }
@@ -106,9 +107,15 @@
             })
 
             socket.on("server group", (value) => {
+              if(currentGroup != "")
+                var curr = document.getElementById(`${currentGroup}`)
+              curr.checked = true;
               var item = `<input id=${value} type="radio" name="group" onClick="groupChange(this.id)">` + `${value}` + '</input>'
               grouplist.innerHTML += item
               grouplist.innerHTML += "<br>"
+              if(currentGroup != "")
+                curr.checked = true;
+              console.log(curr)
             })
 
             socket.on('group load', (data) => {
