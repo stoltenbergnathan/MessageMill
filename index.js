@@ -142,11 +142,12 @@ io.on('connection', (socket) => {
       });
 
       socket.on("group change", (value) => {
+        console.log(value)
         socket.join(`${value}`)
       })
 
       socket.on('group message', (msg) => {
-        io.to(`${msg.group}`).emit('group message', msg);
+        io.sockets.in(`${msg.group}`).emit('group message', msg);
       })
 
     socket.on('disconnect', () => {

@@ -76,12 +76,12 @@
                 messages.removeChild(messages.firstChild)
               currentGroup = cg;
               console.log(currentGroup)
-              socket.emit("group change", cg)
+              socket.emit("group change", currentGroup)
             }
 
             form.addEventListener('submit', function(e) {
               e.preventDefault();
-              socket.emit("group message", {msg: input.value, user: username, group: currentGroup})
+              socket.emit("group message", {msg: input.value, user: socket.auth.user, group: currentGroup})
               input.value = '';
             });
 
@@ -97,10 +97,12 @@
             })
 
             socket.on("group message", (mess) => {
-              var item = document.createElement('li');
-              item.textContent = `${mess.user}: ${mess.msg}`;
-              messages.appendChild(item);
-              window.scrollTo(0, document.body.scrollHeight);
+              if(mess.group == currentGroup){
+                var item = document.createElement('li');
+                item.textContent = `${mess.user}: ${mess.msg}`;
+                messages.appendChild(item);
+                window.scrollTo(0, document.body.scrollHeight);
+              }
             })
 
             socket.on("server group", (value) => {
