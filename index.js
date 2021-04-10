@@ -75,10 +75,6 @@ app.get('/index',(req, res) => {
   res.sendFile(__dirname + '/index.html');
 });
 
-app.get('/directchat', (req, res) => {
-  res.sendFile(__dirname + '/directchat.html');
-});
-
 app.get('/groupchat', (req, res) => {
   res.sendFile(__dirname + '/groupchat.html');
 });
@@ -169,6 +165,19 @@ io.on('connection', (socket) => {
         }
       )
         io.sockets.in(`${msg.group}`).emit('group message', msg);
+      })
+
+      socket.on("direct select", (sender, reciever) => {
+        console.log(sender + " -> " + reciever)
+        U.findOne({username: `${sender}`}, (err, data) => {
+          if(err)
+            console.log(err)
+          else
+            socket.emit("direct select", data);
+        })
+      })
+
+      socket.on("dsend", (sender, reciever, msg) => {
       })
 
       socket.on('disconnect', () => {

@@ -23,13 +23,12 @@
           <a class="navbar-brand" href="#">MessageMill</a>
         </div>
         <ul class="nav navbar-nav">
-          <li><a href="./directchat">Direct Messages</a></li>
           <li><a href="./groupchat">Chat Rooms</a></li>
           <li><a href="./logout">Logout</a></li>
         </ul>
       </div>
     </nav>
-    <div>
+    <div style="margin-top: 4%;">
       <ul id="messages"></ul>
       <form id="form" action="">
         <input id="input" autocomplete="off" /><button>Send</button>
@@ -60,16 +59,17 @@
         });
       
         socket.on('chat message', function(mess) {
-          var item = document.createElement('li');
-          item.textContent = `${mess.user}: ${mess.msg}`;
-          messages.appendChild(item);
+          var item = `<li>${mess.user}: ${mess.msg}</li>`
+          console.log(mess.msg)
+          item.value = `${mess.user}: ${mess.msg}`;
+          messages.innerHTML += item
           window.scrollTo(0, document.body.scrollHeight);
         });
 
         socket.on("user connected", (user) => {
-          var item = document.createElement('li');
-          item.textContent = `${user.username} has connected`;
-          messages.appendChild(item);
+          var item = `<li>${mess.user} has connected</li>`
+          console.log(mess.msg)
+          messages.innerHTML += item
           window.scrollTo(0, document.body.scrollHeight);
         })
 
@@ -82,9 +82,8 @@
 
         socket.on('load', (data) => {
           data.map((d) => {
-            var item = document.createElement('li');
-            item.textContent = d.message;
-            messages.appendChild(item);
+            var item = `<li>${d.message}</li>`
+            messages.innerHTML += item
             window.scrollTo(0, document.body.scrollHeight);
           })
         })
