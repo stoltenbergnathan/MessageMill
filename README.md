@@ -2,7 +2,7 @@
 
 ## Introduction
 
-> This project allows users to talk to each other in real time using websockets. This project taught me how to use express, HTML, bootstrap, socketio, passport, mongoDB, mongoose, and overall JS.
+> This project allows users to talk to each other in real time using websockets. This project taught me how to use express, HTML, bootstrap, socketio, passport, mongoDB, mongoose, and overall JS. Access at https://cs300project.herokuapp.com/
 
 ## Code Samples
 
