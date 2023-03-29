@@ -2,67 +2,74 @@
 
 ## Introduction
 
-> This project allows users to talk to each other in real time using websockets. This project taught me how to use express, HTML, bootstrap, socketio, passport, mongoDB, mongoose, and overall JS. Access at https://cs300project.herokuapp.com/
+> This project allows users to talk to each other in real time using websockets. This project taught me how to use express, HTML, bootstrap, socketio, passport, mongoDB, mongoose, and overall JS.
 
 ## Code Samples
 
->Examples
+> Examples
 
->---------------------------------------------------------------------------------------------------------
+> ---
 
 Express.js
 
 ```javascript
-
-app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/login.html');
+app.get("/", (req, res) => {
+  res.sendFile(__dirname + "/login.html");
 });
 
-app.post('/login', passport.authenticate('local', {successRedirect: '/index', failureRedirect: '/'}),
-  (req, res) => {
-    
-});
+app.post(
+  "/login",
+  passport.authenticate("local", {
+    successRedirect: "/index",
+    failureRedirect: "/",
+  }),
+  (req, res) => {}
+);
 
-app.post('/register', (req, res) => {
-  console.log("Username: " + req.body.username)
-  console.log("Password: " + req.body.password)
-  U.register(new U({username: req.body.username,}), req.body.password, (err, user) => {
-    if(err){
-      console.log(err)
-      res.sendFile(__dirname + '/login.html')
+app.post("/register", (req, res) => {
+  console.log("Username: " + req.body.username);
+  console.log("Password: " + req.body.password);
+  U.register(
+    new U({ username: req.body.username }),
+    req.body.password,
+    (err, user) => {
+      if (err) {
+        console.log(err);
+        res.sendFile(__dirname + "/login.html");
+      }
+      passport.authenticate("local")(req, res, () => {
+        res.sendFile(__dirname + "/index.html");
+      });
     }
-    passport.authenticate("local")(req, res, () => {
-      res.sendFile(__dirname + '/index.html')
-    })
-  })
-})
-
+  );
+});
 ```
 
 Mongoose.js
 
 ```javascript
-
-const mongoose = require("mongoose")
-const Users = require('./models/Users')
-const { connect } = require('http2')
-mongoose.connect(process.env.DATABASE, {useUnifiedTopology: true, useNewUrlParser: true})
+const mongoose = require("mongoose");
+const Users = require("./models/Users");
+const { connect } = require("http2");
+mongoose.connect(process.env.DATABASE, {
+  useUnifiedTopology: true,
+  useNewUrlParser: true,
+});
 
 mongoose.connection.on("error", (err) => {
-    console.log("ERROR: " + err.message)
-})
+  console.log("ERROR: " + err.message);
+});
 
 mongoose.connection.once("open", () => {
-    console.log("MONGODB CONNECTED")
-})
+  console.log("MONGODB CONNECTED");
+});
 
-require("./models/Message")
-require("./models/Users")
-require("./models/Group")
-const Message = mongoose.model("Message")
-const U = mongoose.model("User")
-const Group = mongoose.model("Group")
-
+require("./models/Message");
+require("./models/Users");
+require("./models/Group");
+const Message = mongoose.model("Message");
+const U = mongoose.model("User");
+const Group = mongoose.model("Group");
 ```
 
 HTML & Bootstrap
@@ -97,13 +104,13 @@ HTML & Bootstrap
           }
         });
 
-      
+
         var messages = document.getElementById('messages');
         var form = document.getElementById('form');
         var input = document.getElementById('input');
         var ulist = document.getElementById('users');
 
-      
+
         form.addEventListener('submit', function(e) {
           e.preventDefault();
           if (input.value) {
