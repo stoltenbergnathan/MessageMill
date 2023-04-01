@@ -89,7 +89,12 @@ app.get("/groupchat", (req, res) => {
 });
 
 app.get("/logout", (req, res) => {
-  req.logout();
+  req.logout((err) => {
+    if (err) {
+      console.log(err);
+      return next(err);
+    }
+  });
   res.sendFile(__dirname + "/login.html");
 });
 
