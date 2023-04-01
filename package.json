@@ -24,6 +24,7 @@
   },
   "devDependencies": {
     "jest-cli": "^29.5.0",
+    "nodemon": "^2.0.22",
     "socket.io-client": "^4.0.0",
     "supertest": "^6.1.3"
   }
