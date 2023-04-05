@@ -1,30 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <title>Login</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
-</head>
-<body>
-    <form id="LoginS" style="text-align: center;" class="form-horizontal" method="POST" action="/login">
-        <p>Username</p>
-        <input id="username" type="text" name="username" required pattern="\S+" title="No Spaces Allowed" required />
-        <p>Password</p>
-        <input id="password" type="password" name="password" required pattern="\S+" title="No Spaces Allowed" required />
-        <br>
-        <br>
-        <button id="login" form="LoginS" class="btn btn-primary" type="submit">Login</button>
-        <button id="register" form="LoginS" class="btn btn-secondary" type="submit" formaction="/register">Register</button>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
+      integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu"
+      crossorigin="anonymous"
+    />
+  </head>
+  <body>
+    <form
+      id="LoginS"
+      style="text-align: center"
+      class="form-horizontal"
+      method="POST"
+      action="/login"
+    >
+      <p>Username</p>
+      <input
+        id="username"
+        type="text"
+        name="username"
+        required
+        pattern="\S+"
+        title="No Spaces Allowed"
+        required
+      />
+      <p>Password</p>
+      <input
+        id="password"
+        type="password"
+        name="password"
+        required
+        pattern="\S+"
+        title="No Spaces Allowed"
+        required
+      />
+      <br />
+      <br />
+      <button id="login" form="LoginS" class="btn btn-primary" type="submit">
+        Login
+      </button>
+      <button
+        id="register"
+        form="LoginS"
+        class="btn btn-secondary"
+        type="submit"
+        formaction="/register"
+      >
+        Register
+      </button>
     </form>
 
     <script>
-        var user = document.getElementById("username")
-        var form = document.getElementById('LoginS')
-        form.addEventListener("submit", (e) => {
-            console.log(user.value)
-            document.cookie = user.value;
-        })
+      var user = document.getElementById("username");
+      var form = document.getElementById("LoginS");
+      form.addEventListener("submit", (e) => {
+        console.log(user.value);
+        document.cookie = user.value;
+      });
     </script>
-</body>
+  </body>
 </html>
-
-

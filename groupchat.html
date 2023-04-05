@@ -1,132 +1,199 @@
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css%22%3E">
+<link
+  rel="stylesheet"
+  href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
+  integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu"
+  crossorigin="anonymous"
+/>
+<link
+  rel="stylesheet"
+  href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css%22%3E"
+/>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js%22%3E"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js%22%3E"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js%22%3E"></script>
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <style>
-        body { margin: 0; padding-bottom: 3rem; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-  
-        #form { background: rgba(0, 0, 0, 0.15); padding: 0.25rem; position: absolute; bottom: 0; left: 0; right: 0; display: flex; height: 3rem; box-sizing: border-box; backdrop-filter: blur(10px); }
-        #input { border: none; padding: 0 1rem; flex-grow: 1; border-radius: 2rem; margin: 0.25rem; }
-        #input:focus { outline: none; }
-        #form > button { background: #333; border: none; padding: 0 1rem; margin: 0.25rem; border-radius: 3px; outline: none; color: #fff; }
-  
-        #messages { list-style-type: none; margin: 0; padding: 0; }
-        #messages > li { padding: 0.5rem 1rem; }
-        #messages > li:nth-child(odd) { background: #efefef; }
+      body {
+        margin: 0;
+        padding-bottom: 3rem;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Helvetica, Arial, sans-serif;
+      }
+
+      #form {
+        background: rgba(0, 0, 0, 0.15);
+        padding: 0.25rem;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        height: 3rem;
+        box-sizing: border-box;
+        backdrop-filter: blur(10px);
+      }
+      #input {
+        border: none;
+        padding: 0 1rem;
+        flex-grow: 1;
+        border-radius: 2rem;
+        margin: 0.25rem;
+      }
+      #input:focus {
+        outline: none;
+      }
+      #form > button {
+        background: #333;
+        border: none;
+        padding: 0 1rem;
+        margin: 0.25rem;
+        border-radius: 3px;
+        outline: none;
+        color: #fff;
+      }
+
+      #messages {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+      }
+      #messages > li {
+        padding: 0.5rem 1rem;
+      }
+      #messages > li:nth-child(odd) {
+        background: #efefef;
+      }
     </style>
     <title>Groups</title>
-</head>
-<body>
+  </head>
+  <body>
     <nav class="navbar navbar-inverse">
-        <div class="container-fluid">
-            <div class="navbar-header">
-            <a class="navbar-brand" href="./index">MessageMill</a>
-            </div>
-            <ul class="nav navbar-nav">
-            <li><a href="./groupchat">Chat Rooms</a></li>
-            <li><a href="./logout">Logout</a></li>
-            </ul>
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="./index">MessageMill</a>
         </div>
+        <ul class="nav navbar-nav">
+          <li><a href="./groupchat">Chat Rooms</a></li>
+          <li><a href="./logout">Logout</a></li>
+        </ul>
+      </div>
     </nav>
-        <div class="row container-fluid">
-            <div class="col-sm-4">
-                <div id="groups" class="form-check" style="overflow: auto; max-height: 490px;">
+    <div class="row container-fluid">
+      <div class="col-sm-4">
+        <div
+          id="groups"
+          class="form-check"
+          style="overflow: auto; max-height: 490px"
+        ></div>
+        <form id="groupform" style="position: static; margin-top: auto">
+          <input
+            id="newgroup"
+            required
+            pattern="\S+"
+            placeholder="Group Chat Name"
+            type="text"
+            title="Can't have spaces"
+          />
+          <button>Create New Group</button>
+        </form>
+      </div>
 
-                </div> 
-                  <form id="groupform" style="position: static; margin-top: auto;">
-                    <input id="newgroup" required pattern="\S+" placeholder="Group Chat Name" type="text" title="Can't have spaces">
-                    <button>Create New Group</button>
-                  </form>
-            </div>
+      <div class="col-sm-8 border-box">
+        <ul id="messages" style="overflow: auto; height: 84%"></ul>
+        <form id="form" action="" style="position: static">
+          <input id="input" autocomplete="off" /><button>Send</button>
+        </form>
+      </div>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      const username = document.cookie.split(";")[1];
+      var currentGroup = "";
 
-            <div class="col-sm-8 border-box">
-                <ul id="messages" style="overflow: auto; height: 84%">
-                </ul>
-                <form id="form" action="" style="position:static;">
-                <input id="input" autocomplete="off" /><button>Send</button>
-                </form>
-            </div>
-        </div>
-        <script src="/socket.io/socket.io.js"></script>
-        <script>
-            const username = document.cookie;
-            var currentGroup = ""
-    
-            var socket = io({
-                auth: {
-                    user: username
-                }
-            });
-    
-            var grouplist = document.getElementById("groups");
-            var messages = document.getElementById("messages");
-            var form = document.getElementById("form");
-            var input = document.getElementById("input");
-            var newgroup = document.getElementById("newgroup")
-            var groupform = document.getElementById("groupform")
+      var socket = io({
+        auth: {
+          user: username,
+        },
+      });
 
-            function groupChange(cg)
-            {
-              while(messages.firstChild)
-                messages.removeChild(messages.firstChild)
-              currentGroup = cg;
-              console.log(currentGroup)
-              socket.emit("group change", currentGroup)
-            }
+      var grouplist = document.getElementById("groups");
+      var messages = document.getElementById("messages");
+      var form = document.getElementById("form");
+      var input = document.getElementById("input");
+      var newgroup = document.getElementById("newgroup");
+      var groupform = document.getElementById("groupform");
 
-            form.addEventListener('submit', function(e) {
-              e.preventDefault();
-              socket.emit("group message", {msg: input.value, user: socket.auth.user, group: currentGroup})
-              input.value = '';
-            });
+      function groupChange(cg) {
+        while (messages.firstChild) messages.removeChild(messages.firstChild);
+        currentGroup = cg;
+        console.log(currentGroup);
+        socket.emit("group change", currentGroup);
+      }
 
-            groupform.addEventListener('submit', (e) => {
-              e.preventDefault()
-              if(newgroup.value != "" ){
-                var item = `<input id=${newgroup.value} type="radio" name="group" onClick="groupChange(this.id)">` + newgroup.value + '</input>'
-                grouplist.innerHTML += item
-                grouplist.innerHTML += "<br>"
-                socket.emit("group add", newgroup.value)
-                newgroup.value = ""
-              }
-            })
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        socket.emit("group message", {
+          msg: input.value,
+          user: socket.auth.user,
+          group: currentGroup,
+        });
+        input.value = "";
+      });
 
-            socket.on("group message", (mess) => {
-              if(mess.group == currentGroup){
-                var item = document.createElement('li');
-                item.textContent = `${mess.user}: ${mess.msg}`;
-                messages.appendChild(item);
-                messages.scrollTo(0, messages.scrollHeight);
-              }
-            })
+      groupform.addEventListener("submit", (e) => {
+        e.preventDefault();
+        if (newgroup.value != "") {
+          var item =
+            `<input id=${newgroup.value} type="radio" name="group" onClick="groupChange(this.id)">` +
+            newgroup.value +
+            "</input>";
+          grouplist.innerHTML += item;
+          grouplist.innerHTML += "<br>";
+          socket.emit("group add", newgroup.value);
+          newgroup.value = "";
+        }
+      });
 
-            socket.on("server group", (value) => {
-              var item = `<input id=${value} type="radio" name="group" onClick="groupChange(this.id)">` + `${value}` + '</input>'
-              grouplist.innerHTML += item
-              grouplist.innerHTML += "<br>"
-              console.log(curr)
-            })
+      socket.on("group message", (mess) => {
+        if (mess.group == currentGroup) {
+          var item = document.createElement("li");
+          item.textContent = `${mess.user}: ${mess.msg}`;
+          messages.appendChild(item);
+          messages.scrollTo(0, messages.scrollHeight);
+        }
+      });
 
-            socket.on('group load', (data) => {
-              data.map((d) => {
-                var item = `<input id=${d.groupname} type="radio" name="group" onClick="groupChange(this.id)">` + `${d.groupname}` + '</input>'
-                grouplist.innerHTML += item
-                grouplist.innerHTML += "<br>"
-              })
-            })
+      socket.on("server group", (value) => {
+        var item =
+          `<input id=${value} type="radio" name="group" onClick="groupChange(this.id)">` +
+          `${value}` +
+          "</input>";
+        grouplist.innerHTML += item;
+        grouplist.innerHTML += "<br>";
+        console.log(curr);
+      });
 
-            socket.on("groupm load", (data)=> {
-              data.messages.map((d) => {
-                var item = document.createElement('li');
-                item.textContent = d;
-                messages.appendChild(item);
-                messages.scrollTo(0, messages.scrollHeight);
-              })
-            })
-        </script>
-</body>
+      socket.on("group load", (data) => {
+        data.map((d) => {
+          var item =
+            `<input id=${d.groupname} type="radio" name="group" onClick="groupChange(this.id)">` +
+            `${d.groupname}` +
+            "</input>";
+          grouplist.innerHTML += item;
+          grouplist.innerHTML += "<br>";
+        });
+      });
+
+      socket.on("groupm load", (data) => {
+        data.messages.map((d) => {
+          var item = document.createElement("li");
+          item.textContent = d;
+          messages.appendChild(item);
+          messages.scrollTo(0, messages.scrollHeight);
+        });
+      });
+    </script>
+  </body>
 </html>

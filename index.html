@@ -110,8 +110,8 @@
         });
 
         socket.on("user connected", (user) => {
-          var item = `<li>${mess.user} has connected</li>`;
-          console.log(mess.msg);
+          console.log(user);
+          var item = `<li>${user} has connected</li>`;
           messages.innerHTML += item;
           window.scrollTo(0, document.body.scrollHeight);
         });
