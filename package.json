@@ -1,11 +1,14 @@
 {
   "name": "messagemill",
   "version": "1.0.0",
-  "main": "index.js",
-  "scripts": {
-    "start": "node index.js"
+  "private": true,
+  "engines": {
+    "node": ">=16.14.0",
+    "npm": ">=9.1.2"
   },
-  "author": "",
+  "scripts": {
+    "serve": "nodemon server/app.js"
+  },
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.19.0",
