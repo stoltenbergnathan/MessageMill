@@ -128,16 +128,15 @@
       function groupChange(cg) {
         while (messages.firstChild) messages.removeChild(messages.firstChild);
         currentGroup = cg;
-        console.log(currentGroup);
         socket.emit("group change", currentGroup);
       }
 
       form.addEventListener("submit", function (e) {
         e.preventDefault();
         socket.emit("group message", {
-          msg: input.value,
-          user: socket.auth.user,
-          group: currentGroup,
+          message: input.value,
+          sender: socket.auth.user,
+          room: currentGroup,
         });
         input.value = "";
       });
@@ -145,21 +144,15 @@
       groupform.addEventListener("submit", (e) => {
         e.preventDefault();
         if (newgroup.value != "") {
-          var item =
-            `<input id=${newgroup.value} type="radio" name="group" onClick="groupChange(this.id)">` +
-            newgroup.value +
-            "</input>";
-          grouplist.innerHTML += item;
-          grouplist.innerHTML += "<br>";
           socket.emit("group add", newgroup.value);
           newgroup.value = "";
         }
       });
 
       socket.on("group message", (mess) => {
-        if (mess.group == currentGroup) {
+        if (mess.room == currentGroup) {
           var item = document.createElement("li");
-          item.textContent = `${mess.user}: ${mess.msg}`;
+          item.textContent = `${mess.sender}: ${mess.message}`;
           messages.appendChild(item);
           messages.scrollTo(0, messages.scrollHeight);
         }
@@ -167,18 +160,17 @@
 
       socket.on("server group", (value) => {
         var item =
-          `<input id=${value} type="radio" name="group" onClick="groupChange(this.id)">` +
-          `${value}` +
+          `<input id=${value.id} type="radio" name="group" onClick="groupChange(this.id)">` +
+          `${value.groupname}` +
           "</input>";
         grouplist.innerHTML += item;
         grouplist.innerHTML += "<br>";
-        console.log(curr);
       });
 
       socket.on("group load", (data) => {
         data.map((d) => {
           var item =
-            `<input id=${d.groupname} type="radio" name="group" onClick="groupChange(this.id)">` +
+            `<input id=${d._id} type="radio" name="group" onClick="groupChange(this.id)">` +
             `${d.groupname}` +
             "</input>";
           grouplist.innerHTML += item;
@@ -187,9 +179,9 @@
       });
 
       socket.on("groupm load", (data) => {
-        data.messages.map((d) => {
+        data.map((d) => {
           var item = document.createElement("li");
-          item.textContent = d;
+          item.textContent = `${d.sender}: ${d.message}`;
           messages.appendChild(item);
           messages.scrollTo(0, messages.scrollHeight);
         });

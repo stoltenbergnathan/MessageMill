@@ -1,10 +1,10 @@
-const mongoose = require('mongoose')
+const mongoose = require("mongoose");
 
 const groupSchema = new mongoose.Schema({
-    groupname:{
-        type: String,
-    },
-    messages: [String]
-})
+  groupname: {
+    type: String,
+    required: true,
+  },
+});
 
-module.exports = mongoose.model("Group", groupSchema)
+module.exports = mongoose.model("Group", groupSchema);
