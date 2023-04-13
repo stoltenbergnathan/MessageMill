@@ -4,7 +4,11 @@ module.exports = (io, socket) => {
   Message.find()
     .exec()
     .then((data) => {
-      socket.emit("load", data);
+      console.log(data);
+      socket.emit(
+        "load",
+        data.filter((d) => !d.room)
+      );
     })
     .catch((err) => {
       console.log(err);
@@ -14,7 +18,8 @@ module.exports = (io, socket) => {
     io.emit("chat message", msg);
 
     const newMessage = new Message({
-      message: `${msg.user}: ${msg.msg}`,
+      sender: msg.user,
+      message: msg.msg,
     });
     newMessage.save();
   });

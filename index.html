@@ -125,7 +125,7 @@
 
         socket.on("load", (data) => {
           data.map((d) => {
-            var item = `<li>${d.message}</li>`;
+            var item = `<li>${d.sender}: ${d.message}</li>`;
             messages.innerHTML += item;
             window.scrollTo(0, document.body.scrollHeight);
           });

@@ -1,4 +1,6 @@
 const Group = require("../models/Group");
+const Message = require("../models/Message");
+const mongoose = require("mongoose");
 
 module.exports = (io, socket) => {
   Group.find()
@@ -11,18 +13,20 @@ module.exports = (io, socket) => {
     });
 
   socket.on("group add", (value) => {
-    console.log(value);
     const newGroup = new Group({
       groupname: `${value}`,
     });
     newGroup.save();
-    socket.broadcast.emit("server group", value);
+    socket.emit("server group", {
+      groupname: newGroup.groupname,
+      id: newGroup.id,
+    });
   });
 
   socket.on("group change", (value) => {
-    console.log(value);
     socket.join(`${value}`);
-    Group.findOne({ groupname: `${value}` })
+    Message.find()
+      .where({ room: value })
       .exec()
       .then((data) => {
         socket.emit("groupm load", data);
@@ -32,18 +36,15 @@ module.exports = (io, socket) => {
       });
   });
 
-  socket.on("group message", (msg) => {
-    Group.updateOne(
-      { groupname: msg.group },
-      { $addToSet: { messages: [`${msg.user}: ${msg.msg}`] } }
-    )
-      .then((result) => {
-        console.log(result);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+  socket.on("group message", (data) => {
+    console.log(data);
+    const newMessage = new Message({
+      sender: data.sender,
+      message: data.message,
+      room: data.room,
+    });
 
-    io.sockets.in(`${msg.group}`).emit("group message", msg);
+    newMessage.save();
+    io.emit("group message", newMessage);
   });
 };
