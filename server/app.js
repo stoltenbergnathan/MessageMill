@@ -6,6 +6,23 @@ require("dotenv").config();
 const parser = require("body-parser");
 const userRouter = require("./routes/userRoute");
 const mongoose = require("mongoose");
+const passport = require("./routes/passport").passport;
+const session = require("express-session");
+app.use(
+  session({
+    secret: process.env.SESSIONSECRET,
+    resave: false,
+    saveUninitialized: false,
+  })
+);
+app.use(passport.initialize());
+app.use(passport.session());
+const ensureAuthenticated = (req, res, next) => {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  res.redirect("/");
+};
 
 mongoose.connect(process.env.DATABASE, {
   useUnifiedTopology: true,
@@ -27,11 +44,12 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "..", "login.html"));
 });
 
-app.get("/index", (req, res) => {
+app.get("/index", ensureAuthenticated, (req, res) => {
+  console.log(req.isAuthenticated());
   res.sendFile(path.join(__dirname, "..", "index.html"));
 });
 
-app.get("/groupchat", (req, res) => {
+app.get("/groupchat", ensureAuthenticated, (req, res) => {
   res.sendFile(path.join(__dirname, "..", "groupchat.html"));
 });
 
