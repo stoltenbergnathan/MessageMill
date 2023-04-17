@@ -80,13 +80,7 @@
       </form>
       <script src="/socket.io/socket.io.js"></script>
       <script>
-        const username = document.cookie.split(";")[1];
-
-        var socket = io({
-          auth: {
-            user: username,
-          },
-        });
+        var socket = io();
 
         var messages = document.getElementById("messages");
         var form = document.getElementById("form");
@@ -96,21 +90,18 @@
         form.addEventListener("submit", function (e) {
           e.preventDefault();
           if (input.value) {
-            socket.emit("chat message", { msg: input.value, user: username });
+            socket.emit("chat message", input.value);
             input.value = "";
           }
         });
 
         socket.on("chat message", function (mess) {
-          var item = `<li>${mess.user}: ${mess.msg}</li>`;
-          console.log(mess.msg);
-          item.value = `${mess.user}: ${mess.msg}`;
+          var item = `<li>${mess.sender}: ${mess.message}</li>`;
           messages.innerHTML += item;
           window.scrollTo(0, document.body.scrollHeight);
         });
 
         socket.on("user connected", (user) => {
-          console.log(user);
           var item = `<li>${user} has connected</li>`;
           messages.innerHTML += item;
           window.scrollTo(0, document.body.scrollHeight);

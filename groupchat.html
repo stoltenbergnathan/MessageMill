@@ -109,14 +109,7 @@
     </div>
     <script src="/socket.io/socket.io.js"></script>
     <script>
-      const username = document.cookie.split(";")[1];
-      var currentGroup = "";
-
-      var socket = io({
-        auth: {
-          user: username,
-        },
-      });
+      var socket = io();
 
       var grouplist = document.getElementById("groups");
       var messages = document.getElementById("messages");
@@ -135,7 +128,6 @@
         e.preventDefault();
         socket.emit("group message", {
           message: input.value,
-          sender: socket.auth.user,
           room: currentGroup,
         });
         input.value = "";

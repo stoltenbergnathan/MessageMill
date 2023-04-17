@@ -37,9 +37,10 @@ module.exports = (io, socket) => {
   });
 
   socket.on("group message", (data) => {
-    console.log(data);
+    const username = socket.request.session.passport.user;
+
     const newMessage = new Message({
-      sender: data.sender,
+      sender: username,
       message: data.message,
       room: data.room,
     });

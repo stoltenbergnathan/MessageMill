@@ -4,7 +4,6 @@ module.exports = (io, socket) => {
   Message.find()
     .exec()
     .then((data) => {
-      console.log(data);
       socket.emit(
         "load",
         data.filter((d) => !d.room)
@@ -15,12 +14,14 @@ module.exports = (io, socket) => {
     });
 
   socket.on("chat message", (msg) => {
-    io.emit("chat message", msg);
+    const username = socket.request.session.passport.user;
 
     const newMessage = new Message({
-      sender: msg.user,
-      message: msg.msg,
+      sender: username,
+      message: msg,
     });
     newMessage.save();
+
+    io.emit("chat message", newMessage);
   });
 };
