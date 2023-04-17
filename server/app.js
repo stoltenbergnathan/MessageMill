@@ -7,16 +7,13 @@ const parser = require("body-parser");
 const userRouter = require("./routes/userRoute");
 const mongoose = require("mongoose");
 const passport = require("./routes/passport").passport;
-const session = require("express-session");
-app.use(
-  session({
-    secret: process.env.SESSIONSECRET,
-    resave: false,
-    saveUninitialized: false,
-  })
-);
+const { corsConfig, expressSession, wrap } = require("./appConfig");
+
+app.use(expressSession);
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(corsConfig);
+
 const ensureAuthenticated = (req, res, next) => {
   if (req.isAuthenticated()) {
     return next();
@@ -45,7 +42,6 @@ app.get("/", (req, res) => {
 });
 
 app.get("/index", ensureAuthenticated, (req, res) => {
-  console.log(req.isAuthenticated());
   res.sendFile(path.join(__dirname, "..", "index.html"));
 });
 
@@ -58,11 +54,7 @@ const server = app.listen(port, () => {
 });
 
 const io = require("socket.io")(server);
-io.use((socket, next) => {
-  const user = socket.handshake.auth.user;
-  socket.user = user;
-  next();
-});
+io.use(wrap(expressSession));
 
 const userSockets = require("./sockets/userSocket");
 const mainChatSockets = require("./sockets/mainChatSocket");
@@ -73,5 +65,4 @@ const onConnection = (socket) => {
   mainChatSockets(io, socket);
   groupChatSockets(io, socket);
 };
-
 io.on("connection", onConnection);
