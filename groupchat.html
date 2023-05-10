@@ -121,7 +121,16 @@
       function groupChange(cg) {
         while (messages.firstChild) messages.removeChild(messages.firstChild);
         currentGroup = cg;
-        socket.emit("group change", currentGroup);
+        fetch(`/groupMessages?group=${currentGroup}`)
+          .then((rawData) => rawData.json())
+          .then((messageList) => {
+            messageList.map((me) => {
+              var item = document.createElement("li");
+              item.textContent = `${me.sender}: ${me.message}`;
+              messages.appendChild(item);
+              messages.scrollTo(0, messages.scrollHeight);
+            });
+          });
       }
 
       form.addEventListener("submit", function (e) {
@@ -141,6 +150,19 @@
         }
       });
 
+      fetch("/groups")
+        .then((rawData) => rawData.json())
+        .then((groups) => {
+          groups.map((group) => {
+            var item =
+              `<input id=${group._id} type="radio" name="group" onClick="groupChange(this.id)">` +
+              `${group.groupname}` +
+              "</input>";
+            grouplist.innerHTML += item;
+            grouplist.innerHTML += "<br>";
+          });
+        });
+
       socket.on("group message", (mess) => {
         if (mess.room == currentGroup) {
           var item = document.createElement("li");
@@ -157,30 +179,6 @@
           "</input>";
         grouplist.innerHTML += item;
         grouplist.innerHTML += "<br>";
-      });
-
-      fetch("/groups")
-        .then((rawData) => rawData.json())
-        .then((groups) => {
-          groups.map((group) => {
-            var item =
-              `<input id=${group._id} type="radio" name="group" onClick="groupChange(this.id)">` +
-              `${group.groupname}` +
-              "</input>";
-            grouplist.innerHTML += item;
-            grouplist.innerHTML += "<br>";
-          });
-        });
-
-      // Change to API call
-      // Messages for a group
-      socket.on("groupm load", (data) => {
-        data.map((d) => {
-          var item = document.createElement("li");
-          item.textContent = `${d.sender}: ${d.message}`;
-          messages.appendChild(item);
-          messages.scrollTo(0, messages.scrollHeight);
-        });
       });
     </script>
   </body>

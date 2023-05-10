@@ -9,18 +9,12 @@ const groupRouter = require("./routes/groupRoute");
 const mongoose = require("mongoose");
 const passport = require("./routes/passport").passport;
 const { corsConfig, expressSession, wrap } = require("./appConfig");
+const ensureAuthenticated = require("./middleware").ensureAuthenticated;
 
 app.use(expressSession);
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(corsConfig);
-
-const ensureAuthenticated = (req, res, next) => {
-  if (req.isAuthenticated()) {
-    return next();
-  }
-  res.redirect("/");
-};
 
 mongoose.connect(process.env.DATABASE, {
   useUnifiedTopology: true,
