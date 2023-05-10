@@ -159,17 +159,21 @@
         grouplist.innerHTML += "<br>";
       });
 
-      socket.on("group load", (data) => {
-        data.map((d) => {
-          var item =
-            `<input id=${d._id} type="radio" name="group" onClick="groupChange(this.id)">` +
-            `${d.groupname}` +
-            "</input>";
-          grouplist.innerHTML += item;
-          grouplist.innerHTML += "<br>";
+      fetch("/groups")
+        .then((rawData) => rawData.json())
+        .then((groups) => {
+          groups.map((group) => {
+            var item =
+              `<input id=${group._id} type="radio" name="group" onClick="groupChange(this.id)">` +
+              `${group.groupname}` +
+              "</input>";
+            grouplist.innerHTML += item;
+            grouplist.innerHTML += "<br>";
+          });
         });
-      });
 
+      // Change to API call
+      // Messages for a group
       socket.on("groupm load", (data) => {
         data.map((d) => {
           var item = document.createElement("li");
