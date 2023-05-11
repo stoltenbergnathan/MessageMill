@@ -5,21 +5,16 @@ const port = process.env.PORT || 8347;
 require("dotenv").config();
 const parser = require("body-parser");
 const userRouter = require("./routes/userRoute");
+const groupRouter = require("./routes/groupRoute");
 const mongoose = require("mongoose");
 const passport = require("./routes/passport").passport;
 const { corsConfig, expressSession, wrap } = require("./appConfig");
+const ensureAuthenticated = require("./middleware").ensureAuthenticated;
 
 app.use(expressSession);
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(corsConfig);
-
-const ensureAuthenticated = (req, res, next) => {
-  if (req.isAuthenticated()) {
-    return next();
-  }
-  res.redirect("/");
-};
 
 mongoose.connect(process.env.DATABASE, {
   useUnifiedTopology: true,
@@ -35,6 +30,7 @@ mongoose.connection.once("open", () => {
 });
 
 app.use(userRouter);
+app.use(groupRouter);
 app.use(parser.urlencoded({ extended: true }));
 
 app.get("/", (req, res) => {
@@ -43,10 +39,6 @@ app.get("/", (req, res) => {
 
 app.get("/index", ensureAuthenticated, (req, res) => {
   res.sendFile(path.join(__dirname, "..", "index.html"));
-});
-
-app.get("/groupchat", ensureAuthenticated, (req, res) => {
-  res.sendFile(path.join(__dirname, "..", "groupchat.html"));
 });
 
 const server = app.listen(port, () => {

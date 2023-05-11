@@ -1,17 +1,7 @@
 const Group = require("../models/Group");
 const Message = require("../models/Message");
-const mongoose = require("mongoose");
 
 module.exports = (io, socket) => {
-  Group.find()
-    .exec()
-    .then((data) => {
-      socket.emit("group load", data);
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-
   socket.on("group add", (value) => {
     const newGroup = new Group({
       groupname: `${value}`,
@@ -29,6 +19,7 @@ module.exports = (io, socket) => {
       .where({ room: value })
       .exec()
       .then((data) => {
+        // Remove and change to an API call
         socket.emit("groupm load", data);
       })
       .catch((err) => {
